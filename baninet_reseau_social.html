@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaniNet – Réseau Social Baniakissa Corporation</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --gold:#c8922a;--gold-l:#e8b84b;--gold-dim:rgba(200,146,42,0.12);
+  --dark:#07080f;--dark2:#0f1120;--dark3:#161828;--dark4:#1e2035;
+  --white:#fff;--gray:#8892a4;--light:#f0f2f8;--light2:#e8eaf2;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;
+  --mtn:#ffcc00;--air:#e4002b;
+}
+html,body{height:100%;overflow:hidden;background:var(--dark);}
+body{font-family:'DM Sans',sans-serif;color:var(--white);}
+
+/* ══ SPLASH SCREEN ══ */
+#splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--dark),var(--dark2));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s ease;}
+#splash.hide{opacity:0;pointer-events:none;}
+.splash-glow{position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,146,42,0.12),transparent 70%);}
+.splash-glow2{position:absolute;bottom:-100px;left:-100px;width:300px;height:300px;background:radial-gradient(circle,rgba(99,102,241,0.08),transparent 70%);}
+.splash-logo{text-align:center;z-index:1;}
+.splash-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 20px;box-shadow:0 20px 50px rgba(200,146,42,0.3);animation:iconFloat 2s ease-in-out infinite;}
+@keyframes iconFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.splash-name{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--white);}
+.splash-name span{color:var(--gold-l);}
+.splash-tag{font-size:12px;color:var(--gray);letter-spacing:4px;text-transform:uppercase;margin-top:6px;}
+.splash-bar{width:200px;height:3px;background:rgba(255,255,255,0.08);border-radius:3px;margin-top:40px;overflow:hidden;}
+.splash-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:3px;animation:loadBar 2s ease forwards;}
+@keyframes loadBar{from{width:0;}to{width:100%;}}
+.splash-copy{font-size:10px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:2px;}
+
+/* ══ APP LAYOUT ══ */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ══ LEFT SIDEBAR ══ */
+.left-sidebar{width:240px;background:var(--dark2);border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.left-sidebar::-webkit-scrollbar{width:3px;}
+.left-sidebar::-webkit-scrollbar-thumb{background:rgba(200,146,42,0.2);border-radius:2px;}
+
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.s-logo{display:flex;align-items:center;gap:10px;}
+.s-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.s-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
+.s-logo-name span{color:var(--gold-l);}
+
+/* Profile mini */
+.sidebar-profile{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.2s;}
+.sidebar-profile:hover{background:rgba(255,255,255,0.03);}
+.sp-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sp-name{font-size:13px;font-weight:700;color:var(--white);}
+.sp-handle{font-size:11px;color:var(--gray);}
+.sp-badge{margin-left:auto;background:var(--gold);color:#000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;}
+
+/* Nav items */
+.sidebar-nav{padding:10px 10px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;transition:all 0.2s;margin-bottom:2px;color:var(--gray);font-size:14px;font-weight:500;}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--white);}
+.nav-item.active{background:var(--gold-dim);color:var(--gold-l);border:1px solid rgba(200,146,42,0.2);}
+.nav-item.active .nav-ico{color:var(--gold-l);}
+.nav-ico{font-size:18px;width:22px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;}
+
+.sidebar-bottom{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.05);}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.sb-stat{text-align:center;background:rgba(255,255,255,0.03);border-radius:8px;padding:8px 4px;}
+.sb-stat-n{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--gold-l);}
+.sb-stat-l{font-size:9px;color:var(--gray);letter-spacing:0.5px;margin-top:1px;}
+
+/* ══ MAIN CONTENT ══ */
+.main-content{flex:1;display:flex;overflow:hidden;}
+.center-feed{flex:1;overflow-y:auto;border-right:1px solid rgba(255,255,255,0.06);}
+.center-feed::-webkit-scrollbar{width:3px;}
+.center-feed::-webkit-scrollbar-thumb{background:rgba(200,146,42,0.15);border-radius:2px;}
+
+/* Feed header */
+.feed-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(7,8,15,0.9);backdrop-filter:blur(20px);z-index:10;}
+.feed-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
+.feed-tabs{display:flex;gap:4px;}
+.feed-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;color:var(--gray);}
+.feed-tab.active{background:var(--gold-dim);color:var(--gold-l);border:1px solid rgba(200,146,42,0.2);}
+
+/* Create post */
+.create-post{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.cp-inner{display:flex;gap:12px;align-items:flex-start;}
+.cp-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.cp-input-wrap{flex:1;}
+.cp-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;min-height:50px;transition:border 0.3s;}
+.cp-input::placeholder{color:var(--gray);}
+.cp-input:focus{border-color:rgba(200,146,42,0.4);}
+.cp-actions{display:flex;gap:8px;margin-top:10px;align-items:center;}
+.cp-action-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--gray);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.cp-action-btn:hover{border-color:rgba(200,146,42,0.3);color:var(--gold-l);}
+.cp-post-btn{margin-left:auto;background:linear-gradient(135deg,var(--gold),var(--gold-l));color:#000;border:none;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.cp-post-btn:hover{transform:scale(1.03);}
+
+/* Posts */
+.post{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s;}
+.post:hover{background:rgba(255,255,255,0.01);}
+.post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.post-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.post-name{font-size:14px;font-weight:700;color:var(--white);}
+.post-handle{font-size:12px;color:var(--gray);}
+.post-time{font-size:11px;color:var(--gray);margin-left:auto;}
+.verified{color:var(--gold);font-size:13px;margin-left:3px;}
+.post-content{font-size:14px;color:rgba(255,255,255,0.82);line-height:1.7;margin-bottom:12px;}
+.post-content b{color:var(--gold-l);}
+.post-img{width:100%;border-radius:14px;background:var(--dark3);height:180px;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.06);}
+.post-actions{display:flex;gap:20px;}
+.post-action{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray);cursor:pointer;transition:all 0.2s;padding:4px 8px;border-radius:8px;}
+.post-action:hover{background:rgba(255,255,255,0.04);}
+.post-action:hover.like{color:var(--red);}
+.post-action:hover.comment{color:var(--blue);}
+.post-action:hover.share{color:var(--green);}
+.post-action:hover.boost{color:var(--gold);}
+.post-tag{display:inline-block;background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.2);color:var(--gold-l);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-bottom:8px;}
+
+/* ══ RIGHT SIDEBAR ══ */
+.right-sidebar{width:300px;overflow-y:auto;flex-shrink:0;padding:16px;}
+.right-sidebar::-webkit-scrollbar{display:none;}
+
+/* Search */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--dark3);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 14px;margin-bottom:16px;}
+.search-ico{font-size:14px;color:var(--gray);}
+.search-input{background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;flex:1;}
+.search-input::placeholder{color:var(--gray);}
+
+/* Widgets */
+.widget{background:var(--dark3);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px;margin-bottom:14px;}
+.widget-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.widget-title span{color:var(--gold-l);}
+
+/* Trending */
+.trend-item{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;}
+.trend-item:last-child{border:none;}
+.trend-cat{font-size:10px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;}
+.trend-tag{font-size:14px;font-weight:700;color:var(--white);margin:2px 0;}
+.trend-count{font-size:11px;color:var(--gray);}
+
+/* Who to follow */
+.follow-item{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.follow-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.follow-name{font-size:13px;font-weight:700;color:var(--white);flex:1;}
+.follow-handle{font-size:11px;color:var(--gray);}
+.follow-btn{background:var(--gold-dim);border:1px solid rgba(200,146,42,0.3);color:var(--gold-l);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.2s;}
+.follow-btn:hover{background:var(--gold);color:#000;}
+
+/* Marketplace widget */
+.market-item{display:flex;gap:10px;margin-bottom:10px;cursor:pointer;padding:8px;border-radius:10px;transition:background 0.2s;}
+.market-item:hover{background:rgba(255,255,255,0.03);}
+.market-img{width:44px;height:44px;border-radius:10px;background:var(--dark4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.market-name{font-size:12px;font-weight:700;color:var(--white);line-height:1.3;}
+.market-price{font-size:13px;font-weight:800;color:var(--gold-l);margin-top:2px;}
+
+/* Mobile money widget */
+.pay-widget{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.pw-btn{border-radius:10px;padding:10px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;transition:all 0.2s;}
+.pw-mtn{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.25);color:var(--mtn);}
+.pw-air{background:rgba(228,0,43,0.1);border:1px solid rgba(228,0,43,0.2);color:#ff6b80;}
+.pw-pp{background:rgba(0,48,135,0.2);border:1px solid rgba(0,112,224,0.25);color:#60a5fa;}
+.pw-crypto{background:rgba(247,147,26,0.1);border:1px solid rgba(247,147,26,0.25);color:var(--gold-l);}
+
+/* ══ SCREENS (other sections) ══ */
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+
+/* Messages screen */
+.msg-screen{display:flex;height:100%;}
+.conv-list{width:300px;border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto;flex-shrink:0;}
+.conv-list::-webkit-scrollbar{display:none;}
+.conv-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.06);font-family:'Syne',sans-serif;font-size:17px;font-weight:800;}
+.conv-item{display:flex;gap:12px;padding:14px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.2s;}
+.conv-item:hover,.conv-item.active{background:rgba(200,146,42,0.05);}
+.conv-avatar{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative;}
+.conv-online{position:absolute;bottom:2px;right:2px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--dark2);}
+.conv-name{font-size:13px;font-weight:700;color:var(--white);}
+.conv-preview{font-size:12px;color:var(--gray);margin-top:2px;}
+.conv-time{font-size:10px;color:var(--gray);margin-left:auto;white-space:nowrap;}
+.conv-unread{width:18px;height:18px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#000;margin-top:2px;}
+
+/* Chat window */
+.chat-window{flex:1;display:flex;flex-direction:column;}
+.chat-header{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:12px;background:rgba(7,8,15,0.8);}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.chat-messages::-webkit-scrollbar{display:none;}
+.chat-bubble{max-width:65%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;}
+.chat-bubble.received{background:var(--dark3);border:1px solid rgba(255,255,255,0.06);border-radius:14px 14px 14px 2px;align-self:flex-start;}
+.chat-bubble.sent{background:linear-gradient(135deg,#1d4ed8,#1e40af);border-radius:14px 14px 2px 14px;align-self:flex-end;}
+.chat-time-label{text-align:center;font-size:10px;color:var(--gray);margin:8px 0;}
+.chat-input-area{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;align-items:center;}
+.chat-input{flex:1;background:var(--dark3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.chat-send{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border:none;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+
+/* Groups */
+.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:20px;}
+.group-card{background:var(--dark3);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.3s;}
+.group-card:hover{transform:translateY(-3px);border-color:rgba(200,146,42,0.3);}
+.group-cover{height:80px;display:flex;align-items:center;justify-content:center;font-size:32px;}
+.gc1{background:linear-gradient(135deg,#1a1a2e,#2d3580);}
+.gc2{background:linear-gradient(135deg,#0d3b1e,#1a7a3e);}
+.gc3{background:linear-gradient(135deg,#2a0d40,#602a8a);}
+.gc4{background:linear-gradient(135deg,#3b0d0d,#8b2020);}
+.gc5{background:linear-gradient(135deg,#0d2040,#1a4a8a);}
+.gc6{background:linear-gradient(135deg,#1a0d2e,#3b1a5e);}
+.group-info{padding:12px;}
+.group-name{font-size:13px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.group-members{font-size:11px;color:var(--gray);}
+.group-join{display:inline-block;margin-top:8px;background:var(--gold-dim);border:1px solid rgba(200,146,42,0.25);color:var(--gold-l);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;}
+
+/* Marketplace */
+.market-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:20px;}
+.market-card{background:var(--dark3);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.3s;}
+.market-card:hover{transform:translateY(-3px);border-color:rgba(200,146,42,0.3);}
+.mc-cover{height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;}
+.mc1{background:linear-gradient(135deg,#1a1a2e,#2d3580);}
+.mc2{background:linear-gradient(135deg,#0d3b1e,#1a7a3e);}
+.mc3{background:linear-gradient(135deg,#2a0d40,#602a8a);}
+.mc4{background:linear-gradient(135deg,#0d2040,#1a4a8a);}
+.mc5{background:linear-gradient(135deg,#3b0d0d,#8b2020);}
+.mc6{background:linear-gradient(135deg,#1a0d2e,#3b1a5e);}
+.mc-info{padding:12px;}
+.mc-cat{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.mc-name{font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;line-height:1.3;}
+.mc-footer{display:flex;align-items:center;justify-content:space-between;}
+.mc-price{font-size:15px;font-weight:800;color:var(--gold-l);}
+.mc-buy{background:var(--dark4);color:var(--white);border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* Profil */
+.profile-header{background:linear-gradient(135deg,var(--dark2),var(--dark3));padding:30px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);}
+.profile-cover{width:80px;height:80px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;}
+.profile-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+.profile-handle{font-size:13px;color:var(--gray);margin-top:3px;}
+.profile-bio{font-size:13px;color:rgba(255,255,255,0.6);margin-top:10px;line-height:1.6;max-width:350px;margin-left:auto;margin-right:auto;}
+.profile-stats{display:flex;gap:30px;justify-content:center;margin-top:16px;}
+.ps-item{text-align:center;}
+.ps-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gold-l);}
+.ps-lbl{font-size:11px;color:var(--gray);}
+.profile-actions{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+.pa-btn{padding:9px 20px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.pa-edit{background:var(--gold);color:#000;border:none;}
+.pa-wa{background:#25d366;color:#fff;border:none;}
+.pa-share{background:rgba(255,255,255,0.08);color:var(--white);border:1px solid rgba(255,255,255,0.12);}
+
+/* Notification dot */
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);position:absolute;top:2px;right:2px;}
+
+/* Mobile bottom nav */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--dark2);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 16px;z-index:100;}
+.mn-inner{display:flex;justify-content:space-around;}
+.mn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;position:relative;}
+.mn-ico{font-size:20px;color:var(--gray);}
+.mn-lbl{font-size:9px;color:var(--gray);font-weight:600;}
+.mn-item.active .mn-ico,.mn-item.active .mn-lbl{color:var(--gold-l);}
+
+/* Toast notification */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark3);border:1px solid rgba(200,146,42,0.3);color:var(--white);padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transition:transform 0.4s ease;display:flex;align-items:center;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.3);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* Copyright footer */
+.copy-bar{padding:8px 20px;border-top:1px solid rgba(255,255,255,0.04);font-size:10px;color:rgba(255,255,255,0.15);text-align:center;flex-shrink:0;}
+
+@media(max-width:900px){
+  .left-sidebar{display:none;}
+  .right-sidebar{display:none;}
+  .mobile-nav{display:block;}
+  .center-feed,.screen.active{padding-bottom:70px;}
+  .msg-screen{flex-direction:column;}
+  .conv-list{width:100%;height:200px;overflow-x:auto;display:flex;flex-direction:row;flex-shrink:0;}
+  .conv-item{min-width:200px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-glow"></div>
+  <div class="splash-glow2"></div>
+  <div class="splash-logo">
+    <div class="splash-icon">🌐</div>
+    <div class="splash-name">Bani<span>Net</span></div>
+    <div class="splash-tag">Réseau Social · Congo 🇨🇬</div>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    <div class="splash-copy">© 2025 Baniakissa Corporation · Steve Resnick Baniakissa</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="left-sidebar">
+    <div class="sidebar-logo">
+      <div class="s-logo">
+        <div class="s-logo-icon">🌐</div>
+        <div class="s-logo-name">Bani<span>Net</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-profile" onclick="showScreen('profile')">
+      <div class="sp-avatar">🚀</div>
+      <div>
+        <div class="sp-name">Steve Baniakissa</div>
+        <div class="sp-handle">@baniakissa_corp</div>
+      </div>
+      <div class="sp-badge">PRO</div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-item active" id="nav-feed" onclick="showScreen('feed')">
+        <div class="nav-ico">🏠</div> Accueil
+      </div>
+      <div class="nav-item" id="nav-messages" onclick="showScreen('messages')">
+        <div class="nav-ico">💬</div> Messages
+        <div class="nav-badge">3</div>
+      </div>
+      <div class="nav-item" id="nav-groups" onclick="showScreen('groups')">
+        <div class="nav-ico">👥</div> Groupes
+      </div>
+      <div class="nav-item" id="nav-marketplace" onclick="showScreen('marketplace')">
+        <div class="nav-ico">🛒</div> Marketplace
+      </div>
+      <div class="nav-item" id="nav-notifications" onclick="showScreen('notifications')">
+        <div class="nav-ico">🔔</div> Notifications
+        <div class="nav-badge">7</div>
+      </div>
+      <div class="nav-item" id="nav-profile" onclick="showScreen('profile')">
+        <div class="nav-ico">👤</div> Mon Profil
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="sb-stats">
+        <div class="sb-stat"><div class="sb-stat-n">1.2K</div><div class="sb-stat-l">Abonnés</div></div>
+        <div class="sb-stat"><div class="sb-stat-n">348</div><div class="sb-stat-l">Abonnements</div></div>
+        <div class="sb-stat"><div class="sb-stat-n">89</div><div class="sb-stat-l">Posts</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- ══ FEED SCREEN ══ -->
+    <div class="screen active" id="screen-feed">
+      <div class="center-feed">
+        <div class="feed-header">
+          <div class="feed-title">🏠 Fil d'actualité</div>
+          <div class="feed-tabs">
+            <div class="feed-tab active">Pour vous</div>
+            <div class="feed-tab">Abonnements</div>
+          </div>
+        </div>
+
+        <!-- Create post -->
+        <div class="create-post">
+          <div class="cp-inner">
+            <div class="cp-avatar">🚀</div>
+            <div class="cp-input-wrap">
+              <textarea class="cp-input" placeholder="Partagez votre expertise, conseils ou actualités... 🌍" rows="2" id="postInput"></textarea>
+              <div class="cp-actions">
+                <button class="cp-action-btn">📷 Photo</button>
+                <button class="cp-action-btn">🎬 Vidéo</button>
+                <button class="cp-action-btn">📊 Sondage</button>
+                <button class="cp-post-btn" onclick="addPost()">Publier</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Posts -->
+        <div id="posts-container">
+
+          <div class="post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:linear-gradient(135deg,var(--gold),var(--gold-l));">🚀</div>
+              <div>
+                <div class="post-name">Steve Baniakissa <span class="verified">✓</span></div>
+                <div class="post-handle">@baniakissa_corp · Fondateur</div>
+              </div>
+              <div class="post-time">Il y a 2h</div>
+            </div>
+            <div class="post-tag">📢 ANNONCE</div>
+            <div class="post-content">
+              🎉 <b>BaniNet est maintenant en ligne !</b><br><br>
+              Notre réseau social dédié aux entrepreneurs digitaux d'Afrique est officiellement lancé. Partagez, apprenez, vendez et grandissez ensemble ! 🌍🇨🇬<br><br>
+              Bienvenue dans la communauté Baniakissa Corporation !
+            </div>
+            <div class="post-actions">
+              <div class="post-action like" onclick="likePost(this)">❤️ <span>247</span></div>
+              <div class="post-action comment">💬 <span>89</span></div>
+              <div class="post-action share">↗️ <span>156</span></div>
+              <div class="post-action boost">🚀 <span>Booster</span></div>
+            </div>
+          </div>
+
+          <div class="post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:linear-gradient(135deg,#0d3b1e,#1a7a3e);">💰</div>
+              <div>
+                <div class="post-name">Amina Loko <span class="verified">✓</span></div>
+                <div class="post-handle">@amina_invest · Investisseure</div>
+              </div>
+              <div class="post-time">Il y a 4h</div>
+            </div>
+            <div class="post-tag">₿ CRYPTO</div>
+            <div class="post-content">
+              Le Bitcoin vient de franchir un nouveau palier ! 📈<br><br>
+              Voici ce que je fais dans ces moments : <b>je ne panique pas, je DCA</b>. J'ai investi régulièrement chaque semaine pendant 6 mois et mes résultats parlent d'eux-mêmes.<br><br>
+              Formez-vous avant d'investir. Le Guide Crypto de <b>@baniakissa_corp</b> m'a tout appris !
+            </div>
+            <div class="post-actions">
+              <div class="post-action like" onclick="likePost(this)">❤️ <span>134</span></div>
+              <div class="post-action comment">💬 <span>45</span></div>
+              <div class="post-action share">↗️ <span>78</span></div>
+              <div class="post-action boost">🚀 <span>Booster</span></div>
+            </div>
+          </div>
+
+          <div class="post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:linear-gradient(135deg,#1a1a2e,#2d3580);">🛒</div>
+              <div>
+                <div class="post-name">Jean-Marc Kongo</div>
+                <div class="post-handle">@jm_ecommerce · Entrepreneur</div>
+              </div>
+              <div class="post-time">Il y a 6h</div>
+            </div>
+            <div class="post-tag">🎯 TÉMOIGNAGE</div>
+            <div class="post-content">
+              Grâce à l'eBook <b>"Lancer sa Boutique en Ligne"</b> de Baniakissa Corporation, j'ai lancé ma boutique WhatsApp il y a 3 semaines.<br><br>
+              Résultat : <b>127 000 FCFA de ventes</b> en 3 semaines ! 🔥<br><br>
+              Si vous hésitez encore, n'hésitez plus. 2 500 FCFA d'investissement pour 127 000 FCFA de retour. Merci Steve ! 🙏
+            </div>
+            <div class="post-actions">
+              <div class="post-action like" onclick="likePost(this)">❤️ <span>312</span></div>
+              <div class="post-action comment">💬 <span>67</span></div>
+              <div class="post-action share">↗️ <span>203</span></div>
+              <div class="post-action boost">🚀 <span>Booster</span></div>
+            </div>
+          </div>
+
+          <div class="post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:linear-gradient(135deg,#2a0d40,#602a8a);">🤖</div>
+              <div>
+                <div class="post-name">Marie Nguesso</div>
+                <div class="post-handle">@marie_ia · Coach IA</div>
+              </div>
+              <div class="post-time">Il y a 8h</div>
+            </div>
+            <div class="post-tag">🤖 INTELLIGENCE ARTIFICIELLE</div>
+            <div class="post-content">
+              <b>3 façons de gagner de l'argent avec ChatGPT au Congo :</b><br><br>
+              1️⃣ Rédaction de CV et lettres pro → 2 000-5 000 FCFA/pièce<br>
+              2️⃣ Création de contenu pour pages Facebook → 10 000-30 000 FCFA/mois<br>
+              3️⃣ Traduction de documents → 5 000-15 000 FCFA/document<br><br>
+              J'ai fait 89 000 FCFA ce mois-ci avec ces 3 méthodes ! 💪
+            </div>
+            <div class="post-actions">
+              <div class="post-action like" onclick="likePost(this)">❤️ <span>445</span></div>
+              <div class="post-action comment">💬 <span>112</span></div>
+              <div class="post-action share">↗️ <span>287</span></div>
+              <div class="post-action boost">🚀 <span>Booster</span></div>
+            </div>
+          </div>
+
+        </div>
+        <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation · Steve Resnick Baniakissa · Tous droits réservés 🇨🇬</div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="right-sidebar">
+        <div class="search-box">
+          <div class="search-ico">🔍</div>
+          <input class="search-input" placeholder="Rechercher sur BaniNet...">
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">🔥 <span>Tendances</span></div>
+          <div class="trend-item"><div class="trend-cat">Business · Congo</div><div class="trend-tag">#DigitalCongo</div><div class="trend-count">2 847 posts</div></div>
+          <div class="trend-item"><div class="trend-cat">Finance · Afrique</div><div class="trend-tag">#CryptoAfrique</div><div class="trend-count">1 234 posts</div></div>
+          <div class="trend-item"><div class="trend-cat">Formation · Brazzaville</div><div class="trend-tag">#BaniakissaCorp</div><div class="trend-count">987 posts</div></div>
+          <div class="trend-item"><div class="trend-cat">Tech · Afrique</div><div class="trend-tag">#IAAfrique</div><div class="trend-count">756 posts</div></div>
+          <div class="trend-item"><div class="trend-cat">Entrepreneur</div><div class="trend-tag">#BusinessCongo</div><div class="trend-count">623 posts</div></div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">👥 <span>Suggérés</span></div>
+          <div class="follow-item">
+            <div class="follow-avatar" style="background:linear-gradient(135deg,var(--gold),var(--gold-l));">🚀</div>
+            <div><div class="follow-name">Steve Baniakissa <span style="color:var(--gold);font-size:12px;">✓</span></div><div class="follow-handle">@baniakissa_corp</div></div>
+            <button class="follow-btn" onclick="showToast('✅ Abonné à Steve !')">Suivre</button>
+          </div>
+          <div class="follow-item">
+            <div class="follow-avatar" style="background:linear-gradient(135deg,#0d3b1e,#1a7a3e);">💰</div>
+            <div><div class="follow-name">Amina Loko</div><div class="follow-handle">@amina_invest</div></div>
+            <button class="follow-btn" onclick="showToast('✅ Abonné !')">Suivre</button>
+          </div>
+          <div class="follow-item">
+            <div class="follow-avatar" style="background:linear-gradient(135deg,#2a0d40,#602a8a);">🤖</div>
+            <div><div class="follow-name">Marie Nguesso</div><div class="follow-handle">@marie_ia</div></div>
+            <button class="follow-btn" onclick="showToast('✅ Abonné !')">Suivre</button>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">🛒 <span>Boutique</span></div>
+          <div class="market-item"><div class="market-img">📱</div><div><div class="market-name">Gagner avec le Digital</div><div class="market-price">3 000 FCFA</div></div></div>
+          <div class="market-item"><div class="market-img">₿</div><div><div class="market-name">Guide Crypto & DeFi</div><div class="market-price">5 000 FCFA</div></div></div>
+          <div class="market-item"><div class="market-img">🤖</div><div><div class="market-name">L'IA pour Gagner</div><div class="market-price">4 000 FCFA</div></div></div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">💳 <span>Paiements</span></div>
+          <div class="pay-widget">
+            <div class="pw-btn pw-mtn" onclick="showToast('💛 MTN MoMo : *105# → +242 068 805 017')">💛 MTN MoMo</div>
+            <div class="pw-btn pw-air" onclick="showToast('❤️ Airtel : *500# → +242 068 805 017')">❤️ Airtel</div>
+            <div class="pw-btn pw-pp" onclick="showToast('🔵 PayPal : stevebaniakissa@gmail.com')">🔵 PayPal</div>
+            <div class="pw-btn pw-crypto" onclick="showToast('🔶 Crypto : Contactez Steve sur WhatsApp')">🔶 Crypto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MESSAGES SCREEN ══ -->
+    <div class="screen" id="screen-messages">
+      <div class="msg-screen">
+        <div class="conv-list">
+          <div class="conv-header">💬 Messages</div>
+          <div class="conv-item active" onclick="selectConv('Steve Baniakissa','🚀')">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,var(--gold),var(--gold-l));">🚀<div class="conv-online"></div></div>
+            <div style="flex:1;min-width:0;">
+              <div class="conv-name">Steve Baniakissa ✓</div>
+              <div class="conv-preview">Bienvenue sur BaniNet ! 🎉</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <div class="conv-time">09:30</div>
+              <div class="conv-unread">2</div>
+            </div>
+          </div>
+          <div class="conv-item" onclick="selectConv('Amina Loko','💰')">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#0d3b1e,#1a7a3e);">💰<div class="conv-online"></div></div>
+            <div style="flex:1;min-width:0;">
+              <div class="conv-name">Amina Loko</div>
+              <div class="conv-preview">Merci pour le guide crypto !</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <div class="conv-time">08:15</div>
+              <div class="conv-unread">1</div>
+            </div>
+          </div>
+          <div class="conv-item" onclick="selectConv('Jean-Marc Kongo','🛒')">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#1a1a2e,#2d3580);">🛒</div>
+            <div style="flex:1;min-width:0;">
+              <div class="conv-name">Jean-Marc Kongo</div>
+              <div class="conv-preview">127 000 FCFA ce mois ! 🔥</div>
+            </div>
+            <div class="conv-time">Hier</div>
+          </div>
+          <div class="conv-item" onclick="selectConv('Marie Nguesso','🤖')">
+            <div class="conv-avatar" style="background:linear-gradient(135deg,#2a0d40,#602a8a);">🤖</div>
+            <div style="flex:1;min-width:0;">
+              <div class="conv-name">Marie Nguesso</div>
+              <div class="conv-preview">Super l'agent IA !</div>
+            </div>
+            <div class="conv-time">Hier</div>
+          </div>
+        </div>
+
+        <div class="chat-window">
+          <div class="chat-header">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;" id="chatAvatar">🚀</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;" id="chatName">Steve Baniakissa</div>
+              <div style="font-size:11px;color:var(--green);">● En ligne</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--gray);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;">📞</button>
+              <button style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--gray);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;">📹</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-time-label">Aujourd'hui</div>
+            <div class="chat-bubble received">Bienvenue sur BaniNet ! 🎉 Le réseau social des entrepreneurs digitaux africains. Je suis Steve, comment puis-je vous aider ?</div>
+            <div class="chat-bubble received">N'hésitez pas à explorer la boutique, les groupes et le marketplace ! 🚀</div>
+          </div>
+          <div class="chat-input-area">
+            <input class="chat-input" id="chatInput" placeholder="Écrivez votre message..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+            <button class="chat-send" onclick="sendChatMsg()">➤</button>
+          </div>
+        </div>
+      </div>
+      <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation</div>
+    </div>
+
+    <!-- ══ GROUPS SCREEN ══ -->
+    <div class="screen" id="screen-groups">
+      <div style="overflow-y:auto;flex:1;">
+        <div class="feed-header">
+          <div class="feed-title">👥 Groupes & Communautés</div>
+          <button style="background:var(--gold);color:#000;border:none;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;" onclick="showToast('✅ Groupe créé !')">+ Créer</button>
+        </div>
+        <div class="groups-grid">
+          <div class="group-card" onclick="showToast('✅ Vous avez rejoint le groupe VIP !')">
+            <div class="group-cover gc1">🎓</div>
+            <div class="group-info">
+              <div class="group-name">École Digitale Baniakissa VIP</div>
+              <div class="group-members">👥 247 membres · 🔒 Privé · 5 000 FCFA/mois</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+          <div class="group-card" onclick="showToast('✅ Groupe rejoint !')">
+            <div class="group-cover gc2">₿</div>
+            <div class="group-info">
+              <div class="group-name">Crypto & DeFi Congo</div>
+              <div class="group-members">👥 1 234 membres · 🌐 Public</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+          <div class="group-card" onclick="showToast('✅ Groupe rejoint !')">
+            <div class="group-cover gc3">🤖</div>
+            <div class="group-info">
+              <div class="group-name">IA & Tech Afrique</div>
+              <div class="group-members">👥 892 membres · 🌐 Public</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+          <div class="group-card" onclick="showToast('✅ Groupe rejoint !')">
+            <div class="group-cover gc4">🛒</div>
+            <div class="group-info">
+              <div class="group-name">E-Commerce Brazzaville</div>
+              <div class="group-members">👥 567 membres · 🌐 Public</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+          <div class="group-card" onclick="showToast('✅ Groupe rejoint !')">
+            <div class="group-cover gc5">🚀</div>
+            <div class="group-info">
+              <div class="group-name">Entrepreneurs Congo 🇨🇬</div>
+              <div class="group-members">👥 2 156 membres · 🌐 Public</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+          <div class="group-card" onclick="showToast('✅ Groupe rejoint !')">
+            <div class="group-cover gc6">📺</div>
+            <div class="group-info">
+              <div class="group-name">YouTubeurs Afrique</div>
+              <div class="group-members">👥 445 membres · 🌐 Public</div>
+              <div class="group-join">Rejoindre</div>
+            </div>
+          </div>
+        </div>
+        <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation</div>
+      </div>
+    </div>
+
+    <!-- ══ MARKETPLACE SCREEN ══ -->
+    <div class="screen" id="screen-marketplace">
+      <div style="overflow-y:auto;flex:1;">
+        <div class="feed-header">
+          <div class="feed-title">🛒 Marketplace</div>
+          <button style="background:var(--gold);color:#000;border:none;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;" onclick="showToast('📦 Vendez vos produits sur BaniNet !')">+ Vendre</button>
+        </div>
+        <div class="market-grid">
+          <div class="market-card">
+            <div class="mc-cover mc1">📱</div>
+            <div class="mc-info">
+              <div class="mc-cat">Marketing Digital</div>
+              <div class="mc-name">Gagner avec le Digital en Afrique</div>
+              <div class="mc-footer"><div class="mc-price">3 000 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="mc-cover mc2">₿</div>
+            <div class="mc-info">
+              <div class="mc-cat">Crypto & DeFi</div>
+              <div class="mc-name">Guide Débutant Crypto & DeFi en Afrique</div>
+              <div class="mc-footer"><div class="mc-price">5 000 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="mc-cover mc3">🛒</div>
+            <div class="mc-info">
+              <div class="mc-cat">E-Commerce</div>
+              <div class="mc-name">Lancer sa Boutique en Ligne Brazzaville</div>
+              <div class="mc-footer"><div class="mc-price">2 500 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="mc-cover mc4">🤖</div>
+            <div class="mc-info">
+              <div class="mc-cat">Intelligence Artificielle</div>
+              <div class="mc-name">L'IA pour Gagner de l'Argent en Afrique</div>
+              <div class="mc-footer"><div class="mc-price">4 000 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="mc-cover mc5">🎯</div>
+            <div class="mc-info">
+              <div class="mc-cat">Entrepreneuriat</div>
+              <div class="mc-name">Devenir Entrepreneur Digital au Congo</div>
+              <div class="mc-footer"><div class="mc-price">2 000 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+          <div class="market-card">
+            <div class="mc-cover mc6">📺</div>
+            <div class="mc-info">
+              <div class="mc-cat">YouTube & Contenu</div>
+              <div class="mc-name">Chaîne YouTube Rentable en Afrique</div>
+              <div class="mc-footer"><div class="mc-price">500 FCFA</div><button class="mc-buy" onclick="showToast('💳 Paiement : MTN *105# → +242 068 805 017')">Acheter</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation</div>
+      </div>
+    </div>
+
+    <!-- ══ NOTIFICATIONS SCREEN ══ -->
+    <div class="screen" id="screen-notifications">
+      <div style="overflow-y:auto;flex:1;">
+        <div class="feed-header"><div class="feed-title">🔔 Notifications</div></div>
+        <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+          <div class="post" style="border-radius:14px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,#0d3b1e,#1a7a3e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💰</div>
+              <div><div style="font-size:13px;color:var(--white);line-height:1.5;"><b>Amina Loko</b> a aimé votre publication sur le marketing digital ❤️</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Il y a 5 min</div></div>
+            </div>
+          </div>
+          <div class="post" style="border-radius:14px;border:1px solid rgba(200,146,42,0.2);background:rgba(200,146,42,0.03);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💳</div>
+              <div><div style="font-size:13px;color:var(--white);line-height:1.5;"><b>Paiement reçu !</b> Jean-Marc Kongo a acheté "Guide Crypto" → <b style="color:var(--gold-l);">5 000 FCFA</b> 🎉</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Il y a 12 min</div></div>
+            </div>
+          </div>
+          <div class="post" style="border-radius:14px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,#2a0d40,#602a8a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤖</div>
+              <div><div style="font-size:13px;color:var(--white);line-height:1.5;"><b>Marie Nguesso</b> vous a mentionné dans un post 📢</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Il y a 1h</div></div>
+            </div>
+          </div>
+          <div class="post" style="border-radius:14px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--blue),#6366f1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">👤</div>
+              <div><div style="font-size:13px;color:var(--white);line-height:1.5;"><b>3 nouvelles personnes</b> vous suivent sur BaniNet 🎉</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Il y a 2h</div></div>
+            </div>
+          </div>
+          <div class="post" style="border-radius:14px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💳</div>
+              <div><div style="font-size:13px;color:var(--white);line-height:1.5;"><b>Paiement reçu !</b> Nouveau membre groupe VIP → <b style="color:var(--gold-l);">5 000 FCFA</b> 🎉</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Il y a 3h</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation</div>
+      </div>
+    </div>
+
+    <!-- ══ PROFILE SCREEN ══ -->
+    <div class="screen" id="screen-profile">
+      <div style="overflow-y:auto;flex:1;">
+        <div class="profile-header">
+          <div class="profile-cover">🚀</div>
+          <div class="profile-name">Steve Resnick Baniakissa <span style="color:var(--gold);font-size:18px;">✓</span></div>
+          <div class="profile-handle">@baniakissa_corp · Congo Brazzaville 🇨🇬</div>
+          <div class="profile-bio">Entrepreneur Digital · Coach · Fondateur de Baniakissa Corporation. Expert en Marketing, Crypto, IA, E-Commerce & Business Digital en Afrique.</div>
+          <div class="profile-stats">
+            <div class="ps-item"><div class="ps-num">1.2K</div><div class="ps-lbl">Abonnés</div></div>
+            <div class="ps-item"><div class="ps-num">348</div><div class="ps-lbl">Abonnements</div></div>
+            <div class="ps-item"><div class="ps-num">89</div><div class="ps-lbl">Posts</div></div>
+            <div class="ps-item"><div class="ps-num">6</div><div class="ps-lbl">eBooks</div></div>
+          </div>
+          <div class="profile-actions">
+            <button class="pa-btn pa-edit" onclick="showToast('✏️ Modifier le profil')">✏️ Modifier</button>
+            <button class="pa-btn pa-wa" onclick="window.open('https://wa.me/242068805017','_blank')">💬 WhatsApp</button>
+            <button class="pa-btn pa-share" onclick="showToast('🔗 Lien copié !')">↗️ Partager</button>
+          </div>
+        </div>
+        <div style="padding:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:14px;">📌 Posts épinglés</div>
+          <div class="post" style="border-radius:14px;border:1px solid rgba(255,255,255,0.06);">
+            <div class="post-tag">📢 ANNONCE</div>
+            <div class="post-content"><b>BaniNet est lancé !</b> Le réseau social des entrepreneurs digitaux africains. Rejoignez la communauté ! 🌍🇨🇬</div>
+            <div class="post-actions">
+              <div class="post-action like">❤️ <span>247</span></div>
+              <div class="post-action comment">💬 <span>89</span></div>
+              <div class="post-action share">↗️ <span>156</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="copy-bar">© 2025 BaniNet · Baniakissa Corporation · Steve Resnick Baniakissa · Ayant Droit</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="mn-inner">
+    <div class="mn-item active" id="mn-feed" onclick="showScreen('feed')"><div class="mn-ico">🏠</div><div class="mn-lbl">Accueil</div></div>
+    <div class="mn-item" id="mn-messages" onclick="showScreen('messages')"><div class="mn-ico">💬</div><div class="mn-lbl">Messages</div><div class="notif-dot"></div></div>
+    <div class="mn-item" id="mn-groups" onclick="showScreen('groups')"><div class="mn-ico">👥</div><div class="mn-lbl">Groupes</div></div>
+    <div class="mn-item" id="mn-marketplace" onclick="showScreen('marketplace')"><div class="mn-ico">🛒</div><div class="mn-lbl">Shop</div></div>
+    <div class="mn-item" id="mn-profile" onclick="showScreen('profile')"><div class="mn-ico">👤</div><div class="mn-lbl">Profil</div></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// Splash
+setTimeout(() => document.getElementById('splash').classList.add('hide'), 2200);
+
+// Screen navigation
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mn-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const ni = document.getElementById('nav-' + name);
+  const mi = document.getElementById('mn-' + name);
+  if (ni) ni.classList.add('active');
+  if (mi) mi.classList.add('active');
+}
+
+// Toast
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Add post
+function addPost() {
+  const input = document.getElementById('postInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'post';
+  div.style.animation = 'msgIn 0.3s ease';
+  div.innerHTML = `
+    <div class="post-header">
+      <div class="post-avatar" style="background:linear-gradient(135deg,var(--gold),var(--gold-l));">🚀</div>
+      <div><div class="post-name">Steve Baniakissa <span class="verified">✓</span></div><div class="post-handle">@baniakissa_corp · Maintenant</div></div>
+      <div class="post-time">${now}</div>
+    </div>
+    <div class="post-content">${text.replace(/\n/g,'<br>')}</div>
+    <div class="post-actions">
+      <div class="post-action like" onclick="likePost(this)">❤️ <span>0</span></div>
+      <div class="post-action comment">💬 <span>0</span></div>
+      <div class="post-action share">↗️ <span>0</span></div>
+      <div class="post-action boost">🚀 <span>Booster</span></div>
+    </div>`;
+  const container = document.getElementById('posts-container');
+  container.insertBefore(div, container.firstChild);
+  input.value = '';
+  input.style.height = 'auto';
+  showToast('✅ Publication partagée !');
+}
+
+// Like
+function likePost(el) {
+  const span = el.querySelector('span');
+  const n = parseInt(span.textContent) || 0;
+  span.textContent = el.dataset.liked ? n - 1 : n + 1;
+  el.style.color = el.dataset.liked ? '' : 'var(--red)';
+  el.dataset.liked = el.dataset.liked ? '' : '1';
+}
+
+// Chat
+function selectConv(name, avatar) {
+  document.getElementById('chatName').textContent = name;
+  document.getElementById('chatAvatar').textContent = avatar;
+  document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('chatMessages').innerHTML = `
+    <div class="chat-time-label">Aujourd'hui</div>
+    <div class="chat-bubble received">Bonjour ! Comment puis-je vous aider aujourd'hui ? 😊</div>`;
+}
+
+function sendChatMsg() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chatMessages');
+  const sent = document.createElement('div');
+  sent.className = 'chat-bubble sent';
+  sent.textContent = text;
+  msgs.appendChild(sent);
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const recv = document.createElement('div');
+    recv.className = 'chat-bubble received';
+    recv.textContent = '✅ Message reçu ! Je vous réponds rapidement. Pour toute urgence : WhatsApp +242 068 805 017';
+    msgs.appendChild(recv);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1000);
+}
+
+// Enter key chat
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChatMsg();
+});
+</script>
+</body>
+</html>

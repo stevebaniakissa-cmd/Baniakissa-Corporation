@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Baniakissa Corporation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--gold:#c8922a;--gold-l:#e8b84b;--dark:#0f0f1a;--dark2:#1a1a2e;--text:#1a1a2e;--gray:#6b7280;--light:#f8f7f4;--white:#fff;--green:#16a34a;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#e8e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+
+/* PHONE */
+.phone{width:390px;height:844px;background:var(--white);border-radius:50px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.08);position:relative;display:flex;flex-direction:column;}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:0 0 20px 20px;z-index:100;}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden;position:absolute;inset:0;background:var(--white);}
+.screen.active{display:flex;}
+
+/* ── SPLASH ── */
+#splash{background:linear-gradient(160deg,#0f0f1a,#1a1a2e 60%,#0f1420);align-items:center;justify-content:center;}
+#splash::before{content:'';position:absolute;top:0;right:0;width:280px;height:280px;background:radial-gradient(circle,rgba(200,146,42,0.18),transparent 70%);}
+.splash-wrap{text-align:center;z-index:1;padding:30px;}
+.splash-icon{width:88px;height:88px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px;box-shadow:0 10px 30px rgba(200,146,42,0.4);}
+.splash-name{font-size:26px;font-weight:800;color:#fff;}
+.splash-name span{color:var(--gold-l);}
+.splash-tag{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;margin-top:5px;}
+.splash-desc{font-size:13px;color:rgba(255,255,255,0.5);margin-top:12px;line-height:1.7;max-width:280px;margin-left:auto;margin-right:auto;}
+.splash-pay{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.pay-chip{font-size:10px;font-weight:700;padding:5px 12px;border-radius:20px;}
+.mtn-chip{background:rgba(255,204,0,0.15);border:1px solid rgba(255,204,0,0.4);color:#ffcc00;}
+.airtel-chip{background:rgba(228,0,43,0.15);border:1px solid rgba(228,0,43,0.4);color:#ff6b80;}
+.splash-btn{margin-top:35px;background:var(--gold);color:#fff;border:none;padding:15px 50px;border-radius:30px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 8px 25px rgba(200,146,42,0.4);}
+
+/* ── TOP BAR ── */
+.top-bar{padding:42px 18px 14px;background:var(--dark);flex-shrink:0;}
+.top-bar-row{display:flex;align-items:center;justify-content:space-between;}
+.app-logo{font-size:16px;font-weight:800;color:#fff;}
+.app-logo span{color:var(--gold-l);}
+.notif-btn{width:34px;height:34px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;padding-bottom:75px;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── HOME ── */
+.hero-home{background:var(--dark);padding:18px 18px 35px;position:relative;overflow:hidden;}
+.hero-home::after{content:'';position:absolute;bottom:-25px;left:0;right:0;height:50px;background:var(--light);border-radius:25px 25px 0 0;}
+.hero-home::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(200,146,42,0.12),transparent 70%);}
+.greet{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:3px;}
+.hero-title{font-size:20px;font-weight:800;color:#fff;line-height:1.3;}
+.hero-title span{color:var(--gold-l);}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
+.hero-cta{display:inline-block;margin-top:14px;background:var(--gold);color:#fff;border:none;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+.home-sec{padding:22px 18px 0;background:var(--light);}
+.home-sec-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat-box{background:var(--white);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.stat-num{font-size:20px;font-weight:800;color:var(--gold);}
+.stat-lbl{font-size:10px;color:var(--gray);margin-top:2px;font-weight:600;}
+
+/* Services chips */
+.chips-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;}
+.chips-scroll::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;background:var(--white);border-radius:14px;padding:16px 14px;width:120px;box-shadow:0 2px 10px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.25s;}
+.chip:active{transform:scale(0.96);}
+.chip-ico{font-size:24px;margin-bottom:8px;}
+.chip-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;}
+
+/* Promo */
+.promo{margin:18px 18px 0;background:linear-gradient(135deg,var(--dark),var(--dark2));border-radius:18px;padding:18px;display:flex;gap:12px;align-items:center;}
+.promo-ico{font-size:28px;flex-shrink:0;}
+.promo-txt .promo-title{font-size:14px;font-weight:800;color:#fff;}
+.promo-txt .promo-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
+.promo-btn{background:var(--gold);color:#fff;border:none;padding:9px 14px;border-radius:12px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;margin-left:auto;flex-shrink:0;}
+
+/* Pay badges home */
+.pay-row{display:flex;gap:8px;margin:16px 18px 0;}
+.pay-b{flex:1;border-radius:12px;padding:12px;display:flex;align-items:center;gap:8px;}
+.mtn-b{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.25);}
+.airtel-b{background:rgba(228,0,43,0.1);border:1px solid rgba(228,0,43,0.25);}
+.pay-b-ico{font-size:18px;}
+.pay-b-name{font-size:11px;font-weight:700;color:var(--text);}
+.pay-b-sub{font-size:9px;color:var(--gray);}
+
+/* ── BOUTIQUE ── */
+#boutique-screen .screen-header{padding:42px 18px 14px;background:var(--white);border-bottom:1px solid #f0f0f5;}
+.screen-title{font-size:20px;font-weight:800;color:var(--text);}
+.screen-sub{font-size:12px;color:var(--gray);margin-top:2px;}
+.ebook-list{padding:14px 18px;}
+.ebook-item{background:var(--white);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.06);display:flex;gap:0;}
+.ebook-cover{width:90px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:32px;}
+.ec1{background:linear-gradient(135deg,#1a1a2e,#2d3580);}
+.ec2{background:linear-gradient(135deg,#0d2040,#1a4a8a);}
+.ec3{background:linear-gradient(135deg,#0d3b1e,#1a7a3e);}
+.ec4{background:linear-gradient(135deg,#2a0d40,#602a8a);}
+.ec5{background:linear-gradient(135deg,#3b0d0d,#8b2020);}
+.ec6{background:linear-gradient(135deg,#1a0d2e,#3b1a5e);}
+.ebook-info{flex:1;padding:14px 14px 14px 12px;}
+.ebook-cat{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.ebook-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.ebook-foot{display:flex;align-items:center;justify-content:space-between;}
+.ebook-price{font-size:16px;font-weight:800;color:var(--gold);}
+.ebook-price small{font-size:9px;color:var(--gray);font-weight:400;}
+.buy-btn{background:var(--dark);color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.ebook-tag{display:inline-block;background:var(--gold);color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;margin-bottom:4px;}
+
+/* ── SERVICES ── */
+#services-screen .screen-header{padding:42px 18px 14px;background:var(--white);border-bottom:1px solid #f0f0f5;}
+.svc-list{padding:14px 18px;}
+.svc-item{background:var(--white);border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.svc-ico-wrap{width:46px;height:46px;background:rgba(200,146,42,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.svc-name{font-size:14px;font-weight:700;color:var(--text);}
+.svc-price{font-size:11px;color:var(--gold);font-weight:600;margin-top:2px;}
+.svc-arrow{color:var(--gold);font-size:16px;margin-left:auto;}
+
+/* ── TÉMOIGNAGES ── */
+#avis-screen .screen-header{padding:42px 18px 14px;background:var(--white);border-bottom:1px solid #f0f0f5;}
+.testi-list{padding:14px 18px;background:var(--light);}
+.testi-item{background:var(--white);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.t-stars{color:var(--gold);font-size:13px;letter-spacing:2px;margin-bottom:8px;}
+.t-text{font-size:12px;color:var(--gray);line-height:1.7;font-style:italic;margin-bottom:12px;}
+.t-author{display:flex;align-items:center;gap:10px;}
+.t-av{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11px;}
+.t-name{font-size:13px;font-weight:700;color:var(--text);}
+.t-role{font-size:10px;color:var(--gray);}
+
+/* ── CONTACT ── */
+#contact-screen .screen-header{padding:42px 18px 14px;background:var(--white);border-bottom:1px solid #f0f0f5;}
+.contact-list{padding:14px 18px;}
+.contact-item{background:var(--white);border-radius:14px;padding:15px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.ci-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ci-wa{background:#dcfce7;}
+.ci-em{background:#fef3c7;}
+.ci-fb{background:#dbeafe;}
+.ci-lbl{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--gold);text-transform:uppercase;}
+.ci-val{font-size:13px;font-weight:700;color:var(--text);margin-top:1px;}
+.cform{background:var(--white);border-radius:16px;padding:20px;margin:0 18px 18px;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+.cform-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:15px;}
+.inp-grp{margin-bottom:12px;}
+.inp-grp label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--gray);text-transform:uppercase;margin-bottom:5px;}
+.inp-grp input,.inp-grp textarea,.inp-grp select{width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;background:var(--light);}
+.inp-grp input:focus,.inp-grp textarea:focus{border-color:var(--gold);}
+.inp-grp textarea{min-height:80px;resize:none;}
+.send-btn{width:100%;background:var(--gold);color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+/* ── MODAL PAIEMENT ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:999;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:390px;overflow:hidden;animation:slideUp 0.3s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-head{background:var(--dark);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;}
+.modal-head-title{font-size:16px;font-weight:800;color:#fff;}
+.modal-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;}
+.modal-body{padding:20px 22px;max-height:550px;overflow-y:auto;}
+.modal-product{background:var(--light);border-radius:12px;padding:12px;margin-bottom:16px;display:flex;gap:10px;align-items:center;}
+.mp-ico{font-size:24px;}
+.mp-name{font-size:13px;font-weight:700;color:var(--text);}
+.mp-price{font-size:18px;font-weight:800;color:var(--gold);}
+.steps-bar{display:flex;gap:6px;margin-bottom:18px;}
+.step-bar{flex:1;height:3px;border-radius:3px;background:#e5e7eb;transition:background 0.3s;}
+.step-bar.done{background:var(--gold);}
+.mlabel{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:10px;}
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.op{border:2px solid #e5e7eb;border-radius:12px;padding:14px 10px;cursor:pointer;text-align:center;transition:all 0.25s;background:var(--white);}
+.op.sel,.op:hover{border-color:var(--gold);background:rgba(200,146,42,0.05);}
+.op-logo-mtn{background:#ffcc00;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#000;margin:0 auto 6px;}
+.op-logo-air{background:#e4002b;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;margin:0 auto 6px;}
+.op-name{font-size:12px;font-weight:700;color:var(--text);}
+.phone-grp{margin-bottom:16px;}
+.phone-grp label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--gray);text-transform:uppercase;margin-bottom:6px;}
+.phone-wrap{display:flex;gap:8px;}
+.phone-pfx{background:var(--light);border:1.5px solid #e5e7eb;border-radius:10px;padding:11px 12px;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;}
+.phone-inp{flex:1;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;}
+.phone-inp:focus{border-color:var(--gold);}
+.confirm-btn{width:100%;background:var(--gold);color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.pay-note{font-size:10px;color:var(--gray);text-align:center;margin-top:10px;line-height:1.6;}
+/* Step 2 */
+.instr{display:none;}
+.instr.show{display:block;}
+.instr-box{background:var(--light);border-radius:12px;padding:15px;margin-bottom:14px;}
+.instr-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px;}
+.instr-steps{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.instr-steps li{display:flex;gap:9px;font-size:12px;color:var(--gray);line-height:1.5;}
+.i-num{width:20px;height:20px;background:var(--gold);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.instr-code{background:var(--dark);color:var(--gold-l);padding:10px 14px;border-radius:8px;font-family:monospace;font-size:13px;margin:10px 0;text-align:center;letter-spacing:1px;}
+.done-btn{width:100%;background:var(--green);color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+/* Step 3 success */
+.success{display:none;text-align:center;padding:10px 0;}
+.success.show{display:block;}
+.success-ico{font-size:56px;margin-bottom:10px;}
+.success-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.success-desc{font-size:12px;color:var(--gray);line-height:1.7;margin-bottom:16px;}
+.success-wa{display:inline-block;background:#25d366;color:#fff;padding:12px 22px;border-radius:12px;font-weight:800;text-decoration:none;font-size:13px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:72px;background:var(--white);border-top:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-around;padding-bottom:4px;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,0.06);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 14px;transition:all 0.2s;}
+.nav-ico{font-size:19px;color:var(--gray);}
+.nav-lbl{font-size:9px;font-weight:700;color:var(--gray);letter-spacing:0.5px;}
+.nav-item.active .nav-ico,.nav-item.active .nav-lbl{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ═══ SPLASH ═══ -->
+  <div class="screen active" id="splash">
+    <div class="splash-wrap">
+      <div class="splash-icon">🚀</div>
+      <div class="splash-name">Baniakissa <span>Corp.</span></div>
+      <div class="splash-tag">Expert Digital · Congo 🇨🇬</div>
+      <p class="splash-desc">eBooks, Formations, Coaching Digital & Investissement. Tout ce dont vous avez besoin pour réussir en ligne.</p>
+      <div class="splash-pay">
+        <div class="pay-chip mtn-chip">💛 MTN Money</div>
+        <div class="pay-chip airtel-chip">❤️ Airtel Money</div>
+      </div>
+      <button class="splash-btn" onclick="goTo('home')">Commencer →</button>
+    </div>
+  </div>
+
+  <!-- ═══ HOME ═══ -->
+  <div class="screen" id="home">
+    <div class="top-bar">
+      <div class="top-bar-row">
+        <div class="app-logo">Baniakissa <span>Corp.</span></div>
+        <div class="notif-btn">🔔</div>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="hero-home">
+        <div class="greet">Bienvenue 👋</div>
+        <div class="hero-title">Steve Resnick <span>Baniakissa</span></div>
+        <div class="hero-sub">Entrepreneur · Coach Digital · Congo 🇨🇬</div>
+        <button class="hero-cta" onclick="goTo('boutique-screen')">Voir la boutique →</button>
+      </div>
+      <div class="home-sec" style="padding-top:30px;">
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-num">6</div><div class="stat-lbl">eBooks</div></div>
+          <div class="stat-box"><div class="stat-num">9+</div><div class="stat-lbl">Services</div></div>
+          <div class="stat-box"><div class="stat-num">💳</div><div class="stat-lbl">Mobile Money</div></div>
+        </div>
+        <div class="home-sec-title">Nos Services</div>
+        <div class="chips-scroll">
+          <div class="chip"><div class="chip-ico">📱</div><div class="chip-name">Marketing Digital</div></div>
+          <div class="chip"><div class="chip-ico">₿</div><div class="chip-name">Crypto & Bourse</div></div>
+          <div class="chip"><div class="chip-ico">🛒</div><div class="chip-name">E-Commerce</div></div>
+          <div class="chip"><div class="chip-ico">🤖</div><div class="chip-name">Intelligence Artificielle</div></div>
+          <div class="chip"><div class="chip-ico">💻</div><div class="chip-name">Dev Web</div></div>
+          <div class="chip"><div class="chip-ico">📺</div><div class="chip-name">YouTube</div></div>
+        </div>
+      </div>
+      <div class="pay-row">
+        <div class="pay-b mtn-b"><div class="pay-b-ico">💛</div><div><div class="pay-b-name">MTN Money</div><div class="pay-b-sub">Paiement accepté</div></div></div>
+        <div class="pay-b airtel-b"><div class="pay-b-ico">❤️</div><div><div class="pay-b-name">Airtel Money</div><div class="pay-b-sub">Paiement accepté</div></div></div>
+      </div>
+      <div class="promo" style="margin-bottom:18px;">
+        <div class="promo-ico">💡</div>
+        <div class="promo-txt"><div class="promo-title">Consultation Gratuite</div><div class="promo-sub">Discutez de votre projet</div></div>
+        <button class="promo-btn" onclick="goTo('contact-screen')">Démarrer</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="goTo('home')"><div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div></div>
+      <div class="nav-item" onclick="goTo('boutique-screen')"><div class="nav-ico">🛒</div><div class="nav-lbl">Boutique</div></div>
+      <div class="nav-item" onclick="goTo('services-screen')"><div class="nav-ico">💼</div><div class="nav-lbl">Services</div></div>
+      <div class="nav-item" onclick="goTo('avis-screen')"><div class="nav-ico">⭐</div><div class="nav-lbl">Avis</div></div>
+      <div class="nav-item" onclick="goTo('contact-screen')"><div class="nav-ico">💬</div><div class="nav-lbl">Contact</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ BOUTIQUE ═══ -->
+  <div class="screen" id="boutique-screen">
+    <div class="screen-header">
+      <div class="screen-title">📚 Boutique eBooks</div>
+      <div class="screen-sub">Paiement MTN Money & Airtel Money</div>
+    </div>
+    <div class="scroll">
+      <div class="ebook-list">
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec1">📱</div>
+          <div class="ebook-info">
+            <div class="ebook-tag">BEST-SELLER</div>
+            <div class="ebook-cat">Marketing Digital</div>
+            <div class="ebook-title">Gagner de l'Argent avec le Digital en Afrique</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">3 000 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('Gagner avec le Digital en Afrique','3 000 FCFA','📱')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec2">₿</div>
+          <div class="ebook-info">
+            <div class="ebook-tag">POPULAIRE</div>
+            <div class="ebook-cat">Crypto & Investissement</div>
+            <div class="ebook-title">Guide Débutant Crypto & DeFi en Afrique</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">5 000 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('Guide Débutant Crypto & DeFi','5 000 FCFA','₿')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec3">🛒</div>
+          <div class="ebook-info">
+            <div class="ebook-cat">E-Commerce</div>
+            <div class="ebook-title">Lancer sa Boutique en Ligne depuis Brazzaville</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">2 500 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('Boutique en Ligne Brazzaville','2 500 FCFA','🛒')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec4">🤖</div>
+          <div class="ebook-info">
+            <div class="ebook-tag">NOUVEAU</div>
+            <div class="ebook-cat">Intelligence Artificielle</div>
+            <div class="ebook-title">L'IA pour Gagner de l'Argent en Afrique</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">4 000 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('L\'IA pour Gagner en Afrique','4 000 FCFA','🤖')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec5">🎯</div>
+          <div class="ebook-info">
+            <div class="ebook-cat">Entrepreneuriat</div>
+            <div class="ebook-title">Devenir Entrepreneur Digital au Congo</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">2 000 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('Entrepreneur Digital au Congo','2 000 FCFA','🎯')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ebook-item">
+          <div class="ebook-cover ec6">📺</div>
+          <div class="ebook-info">
+            <div class="ebook-cat">YouTube & Contenu</div>
+            <div class="ebook-title">Créer une Chaîne YouTube Rentable en Afrique</div>
+            <div class="ebook-foot">
+              <div class="ebook-price">500 <small>FCFA</small></div>
+              <button class="buy-btn" onclick="openModal('Chaîne YouTube Rentable','500 FCFA','📺')">Acheter</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')"><div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div></div>
+      <div class="nav-item active" onclick="goTo('boutique-screen')"><div class="nav-ico">🛒</div><div class="nav-lbl">Boutique</div></div>
+      <div class="nav-item" onclick="goTo('services-screen')"><div class="nav-ico">💼</div><div class="nav-lbl">Services</div></div>
+      <div class="nav-item" onclick="goTo('avis-screen')"><div class="nav-ico">⭐</div><div class="nav-lbl">Avis</div></div>
+      <div class="nav-item" onclick="goTo('contact-screen')"><div class="nav-ico">💬</div><div class="nav-lbl">Contact</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SERVICES ═══ -->
+  <div class="screen" id="services-screen">
+    <div class="screen-header">
+      <div class="screen-title">💼 Nos Services</div>
+      <div class="screen-sub">9 domaines d'expertise</div>
+    </div>
+    <div class="scroll">
+      <div class="svc-list">
+        <div class="svc-item"><div class="svc-ico-wrap">📱</div><div><div class="svc-name">Marketing Digital</div><div class="svc-price">À partir de 10 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">🛒</div><div><div class="svc-name">E-Commerce</div><div class="svc-price">À partir de 25 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">₿</div><div><div class="svc-name">Coaching Crypto & Bourse</div><div class="svc-price">À partir de 15 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">🤖</div><div><div class="svc-name">Intelligence Artificielle</div><div class="svc-price">À partir de 20 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">💻</div><div><div class="svc-name">Développement Web</div><div class="svc-price">À partir de 50 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">🎯</div><div><div class="svc-name">Coaching Entrepreneurial</div><div class="svc-price">À partir de 15 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">📺</div><div><div class="svc-name">YouTube & Contenu</div><div class="svc-price">À partir de 20 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">🔗</div><div><div class="svc-name">Tunnel de Vente</div><div class="svc-price">À partir de 35 000 FCFA</div></div><div class="svc-arrow">›</div></div>
+        <div class="svc-item"><div class="svc-ico-wrap">📊</div><div><div class="svc-name">Community Management</div><div class="svc-price">À partir de 30 000 FCFA/mois</div></div><div class="svc-arrow">›</div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')"><div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div></div>
+      <div class="nav-item" onclick="goTo('boutique-screen')"><div class="nav-ico">🛒</div><div class="nav-lbl">Boutique</div></div>
+      <div class="nav-item active" onclick="goTo('services-screen')"><div class="nav-ico">💼</div><div class="nav-lbl">Services</div></div>
+      <div class="nav-item" onclick="goTo('avis-screen')"><div class="nav-ico">⭐</div><div class="nav-lbl">Avis</div></div>
+      <div class="nav-item" onclick="goTo('contact-screen')"><div class="nav-ico">💬</div><div class="nav-lbl">Contact</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ AVIS ═══ -->
+  <div class="screen" id="avis-screen">
+    <div class="screen-header">
+      <div class="screen-title">⭐ Témoignages</div>
+      <div class="screen-sub">Ils ont réussi avec nous</div>
+    </div>
+    <div class="scroll">
+      <div class="testi-list">
+        <div class="testi-item"><div class="t-stars">★★★★★</div><p class="t-text">« L'eBook sur le marketing digital m'a permis de lancer ma boutique et de faire mes premières ventes en 2 semaines ! Steve est un vrai professionnel. »</p><div class="t-author"><div class="t-av">JM</div><div><div class="t-name">Jean-Marc K.</div><div class="t-role">Entrepreneur, Brazzaville</div></div></div></div>
+        <div class="testi-item"><div class="t-stars">★★★★★</div><p class="t-text">« Le guide crypto de Baniakissa Corp m'a tout appris. J'ai récupéré la mise en 1 mois ! Paiement facile avec MTN Money, livraison immédiate. »</p><div class="t-author"><div class="t-av">AL</div><div><div class="t-name">Amina L.</div><div class="t-role">Investisseure, Congo</div></div></div></div>
+        <div class="testi-item"><div class="t-stars">★★★★★</div><p class="t-text">« Mon site et ma chaîne YouTube ont été transformés. Depuis le coaching, je reçois des clients chaque semaine ! Je recommande à 100%. »</p><div class="t-author"><div class="t-av">PB</div><div><div class="t-name">Patrick B.</div><div class="t-role">Coach, Pointe-Noire</div></div></div></div>
+        <div class="testi-item"><div class="t-stars">★★★★★</div><p class="t-text">« L'accompagnement de Baniakissa Corporation a changé ma vision du business digital. En 3 mois, j'ai lancé ma boutique et gagné mes premiers 50 000 FCFA en ligne. »</p><div class="t-author"><div class="t-av">MN</div><div><div class="t-name">Marie N.</div><div class="t-role">Freelance, Brazzaville</div></div></div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')"><div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div></div>
+      <div class="nav-item" onclick="goTo('boutique-screen')"><div class="nav-ico">🛒</div><div class="nav-lbl">Boutique</div></div>
+      <div class="nav-item" onclick="goTo('services-screen')"><div class="nav-ico">💼</div><div class="nav-lbl">Services</div></div>
+      <div class="nav-item active" onclick="goTo('avis-screen')"><div class="nav-ico">⭐</div><div class="nav-lbl">Avis</div></div>
+      <div class="nav-item" onclick="goTo('contact-screen')"><div class="nav-ico">💬</div><div class="nav-lbl">Contact</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ CONTACT ═══ -->
+  <div class="screen" id="contact-screen">
+    <div class="screen-header">
+      <div class="screen-title">💬 Contact</div>
+      <div class="screen-sub">Réponse rapide garantie !</div>
+    </div>
+    <div class="scroll">
+      <div class="contact-list">
+        <a class="contact-item" href="https://wa.me/242068805017" style="text-decoration:none;"><div class="ci-ico ci-wa">💬</div><div><div class="ci-lbl">WhatsApp</div><div class="ci-val">+242 068 805 017</div></div></a>
+        <a class="contact-item" href="mailto:stevebaniakissa@gmail.com" style="text-decoration:none;"><div class="ci-ico ci-em">✉️</div><div><div class="ci-lbl">Email</div><div class="ci-val">stevebaniakissa@gmail.com</div></div></a>
+        <a class="contact-item" href="#" style="text-decoration:none;"><div class="ci-ico ci-fb">👥</div><div><div class="ci-lbl">Facebook</div><div class="ci-val">Baniakissa Corporation</div></div></a>
+      </div>
+      <div class="cform">
+        <div class="cform-title">Envoyer un message</div>
+        <div class="inp-grp"><label>Votre nom</label><input type="text" placeholder="Nom complet"></div>
+        <div class="inp-grp"><label>Service souhaité</label>
+          <select>
+            <option>eBook / Formation</option>
+            <option>Marketing Digital</option>
+            <option>E-Commerce</option>
+            <option>Coaching Crypto</option>
+            <option>Développement Web</option>
+            <option>Coaching Entrepreneurial</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="inp-grp"><label>Message</label><textarea placeholder="Décrivez votre besoin..."></textarea></div>
+        <button class="send-btn" onclick="alert('Message envoyé ! Steve vous contacte bientôt 🚀')">Envoyer →</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')"><div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div></div>
+      <div class="nav-item" onclick="goTo('boutique-screen')"><div class="nav-ico">🛒</div><div class="nav-lbl">Boutique</div></div>
+      <div class="nav-item" onclick="goTo('services-screen')"><div class="nav-ico">💼</div><div class="nav-lbl">Services</div></div>
+      <div class="nav-item" onclick="goTo('avis-screen')"><div class="nav-ico">⭐</div><div class="nav-lbl">Avis</div></div>
+      <div class="nav-item active" onclick="goTo('contact-screen')"><div class="nav-ico">💬</div><div class="nav-lbl">Contact</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL PAIEMENT ═══ -->
+  <div class="overlay" id="payModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-head-title">💳 Paiement Mobile Money</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- STEP 1 -->
+        <div id="mstep1">
+          <div class="modal-product">
+            <div class="mp-ico" id="mIco">📱</div>
+            <div><div class="mp-name" id="mName">eBook</div><div class="mp-price" id="mPrice">0 FCFA</div></div>
+          </div>
+          <div class="steps-bar"><div class="step-bar done"></div><div class="step-bar" id="sb2"></div><div class="step-bar" id="sb3"></div></div>
+          <div class="mlabel">Choisissez votre opérateur</div>
+          <div class="ops">
+            <div class="op" id="opMTN" onclick="selectOp('mtn')">
+              <div class="op-logo-mtn">MTN</div>
+              <div class="op-name">MTN Money</div>
+            </div>
+            <div class="op" id="opAIR" onclick="selectOp('airtel')">
+              <div class="op-logo-air">AIR</div>
+              <div class="op-name">Airtel Money</div>
+            </div>
+          </div>
+          <div class="phone-grp">
+            <label>Numéro Mobile Money</label>
+            <div class="phone-wrap">
+              <div class="phone-pfx">🇨🇬 +242</div>
+              <input class="phone-inp" type="tel" id="phoneInp" placeholder="068 XXX XXX" maxlength="9">
+            </div>
+          </div>
+          <button class="confirm-btn" onclick="goStep2()">Continuer →</button>
+          <p class="pay-note">🔒 Votre numéro est utilisé uniquement pour ce paiement.<br>eBook livré sur WhatsApp après confirmation.</p>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="mstep2" class="instr">
+          <div class="modal-product">
+            <div class="mp-ico" id="mIco2">📱</div>
+            <div><div class="mp-name" id="mName2">eBook</div><div class="mp-price" id="mPrice2">0 FCFA</div></div>
+          </div>
+          <div class="steps-bar"><div class="step-bar done"></div><div class="step-bar done"></div><div class="step-bar" id="sb3b"></div></div>
+          <div id="instrMTN" style="display:none;">
+            <div class="instr-box">
+              <div class="instr-title">💛 Instructions MTN Money</div>
+              <ul class="instr-steps">
+                <li><div class="i-num">1</div><div>Composez le <strong>*126#</strong> sur votre téléphone</div></li>
+                <li><div class="i-num">2</div><div>Sélectionnez <strong>"Transfert d'argent"</strong></div></li>
+                <li><div class="i-num">3</div><div>Envoyez le montant au numéro ci-dessous :</div></li>
+              </ul>
+              <div class="instr-code">📞 +242 068 805 017</div>
+              <ul class="instr-steps">
+                <li><div class="i-num">4</div><div>Référence : <strong id="refMTN"></strong></div></li>
+                <li><div class="i-num">5</div><div>Confirmez avec votre <strong>code PIN MTN</strong></div></li>
+              </ul>
+            </div>
+          </div>
+          <div id="instrAIR" style="display:none;">
+            <div class="instr-box">
+              <div class="instr-title">❤️ Instructions Airtel Money</div>
+              <ul class="instr-steps">
+                <li><div class="i-num">1</div><div>Composez le <strong>*555#</strong> sur votre téléphone</div></li>
+                <li><div class="i-num">2</div><div>Sélectionnez <strong>"Envoyer de l'argent"</strong></div></li>
+                <li><div class="i-num">3</div><div>Envoyez le montant au numéro ci-dessous :</div></li>
+              </ul>
+              <div class="instr-code">📞 +242 068 805 017</div>
+              <ul class="instr-steps">
+                <li><div class="i-num">4</div><div>Référence : <strong id="refAIR"></strong></div></li>
+                <li><div class="i-num">5</div><div>Confirmez avec votre <strong>code PIN Airtel</strong></div></li>
+              </ul>
+            </div>
+          </div>
+          <button class="done-btn" onclick="goStep3()">✅ J'ai effectué le paiement</button>
+          <p class="pay-note" style="margin-top:10px;">Envoyez la capture d'écran sur WhatsApp pour recevoir votre eBook dans les 30 minutes.</p>
+        </div>
+
+        <!-- STEP 3 SUCCESS -->
+        <div id="mstep3" class="success">
+          <div class="steps-bar"><div class="step-bar done"></div><div class="step-bar done"></div><div class="step-bar done"></div></div>
+          <div class="success-ico">🎉</div>
+          <div class="success-title">Merci pour votre achat !</div>
+          <p class="success-desc">Envoyez maintenant une capture d'écran de votre paiement sur WhatsApp. Vous recevrez votre eBook immédiatement !</p>
+          <a class="success-wa" href="https://wa.me/242068805017?text=Bonjour%20Steve%2C%20j'ai%20pay%C3%A9%20pour%20mon%20eBook%20!" target="_blank">💬 Envoyer sur WhatsApp →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let selOp = '';
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function openModal(name, price, ico) {
+  document.getElementById('mIco').textContent = ico;
+  document.getElementById('mName').textContent = name;
+  document.getElementById('mPrice').textContent = price;
+  document.getElementById('mIco2').textContent = ico;
+  document.getElementById('mName2').textContent = name;
+  document.getElementById('mPrice2').textContent = price;
+  document.getElementById('mstep1').style.display = 'block';
+  document.getElementById('mstep2').className = 'instr';
+  document.getElementById('mstep3').className = 'success';
+  document.getElementById('opMTN').classList.remove('sel');
+  document.getElementById('opAIR').classList.remove('sel');
+  document.getElementById('phoneInp').value = '';
+  document.getElementById('sb2').classList.remove('done');
+  document.getElementById('sb3').classList.remove('done');
+  selOp = '';
+  document.getElementById('payModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('payModal').classList.remove('open');
+}
+
+function selectOp(op) {
+  selOp = op;
+  document.getElementById('opMTN').classList.toggle('sel', op === 'mtn');
+  document.getElementById('opAIR').classList.toggle('sel', op === 'airtel');
+}
+
+function goStep2() {
+  const phone = document.getElementById('phoneInp').value.trim();
+  if (!selOp) { alert('Choisissez votre opérateur (MTN ou Airtel)'); return; }
+  if (phone.length < 8) { alert('Entrez un numéro valide'); return; }
+  const ref = 'BANI-' + Math.floor(Math.random() * 90000 + 10000);
+  document.getElementById('refMTN').textContent = ref;
+  document.getElementById('refAIR').textContent = ref;
+  document.getElementById('instrMTN').style.display = selOp === 'mtn' ? 'block' : 'none';
+  document.getElementById('instrAIR').style.display = selOp === 'airtel' ? 'block' : 'none';
+  document.getElementById('mstep1').style.display = 'none';
+  document.getElementById('mstep2').className = 'instr show';
+  document.getElementById('sb2').classList.add('done');
+}
+
+function goStep3() {
+  document.getElementById('mstep2').className = 'instr';
+  document.getElementById('mstep3').className = 'success show';
+  document.getElementById('sb3').classList.add('done');
+  document.getElementById('sb3b').classList.add('done');
+}
+
+document.getElementById('payModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
